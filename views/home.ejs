@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Shortener</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+
+      form {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+
+      label {
+        font-size: 16px;
+        font-weight: bold;
+        margin-right: 10px;
+        color: #333;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        max-width: 500px;
+        padding: 10px;
+        font-size: 14px;
+        margin-right: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      .generated-url {
+        display: none;
+        text-align: center;
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #e7f3ff;
+        border: 1px solid #007bff;
+        border-radius: 8px;
+        color: #007bff;
+      }
+
+      .generated-url a {
+        color: #007bff;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
+      .generated-url a:hover {
+        text-decoration: underline;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      th,
+      td {
+        padding: 12px 15px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #007bff;
+        color: #fff;
+        font-weight: bold;
+      }
+
+      td {
+        border-bottom: 1px solid #ddd;
+      }
+
+      tr:hover {
+        background-color: #f1f1f1;
+      }
+
+      a {
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 915px) and (min-width: 500px) {
+        form {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          margin-bottom: 20px;
+          padding: 20px;
+        }
+
+        label {
+          font-size: 16px;
+          font-weight: bold;
+          margin-right: 10px;
+        }
+
+        input[type="text"] {
+          width: 100%;
+          max-width: 400px;
+          padding: 10px;
+          font-size: 14px;
+          margin-right: 10px;
+        }
+
+        button {
+          padding: 10px 20px;
+          background-color: #007bff;
+          color: #fff;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 16px;
+        }
+
+        table {
+          display: block;
+          overflow-x: auto;
+        }
+
+        table thead {
+          display: none;
+        }
+
+        table tr {
+          display: block;
+          margin-bottom: 15px;
+          border-bottom: 1px solid #ddd;
+        }
+
+        table td {
+          display: block;
+          width: 100%;
+          text-align: left;
+          position: relative;
+          padding-left: 50%;
+        }
+
+        table td::before {
+          content: attr(data-label);
+          position: absolute;
+          left: 0;
+          width: 45%;
+          padding-left: 15px;
+          font-weight: bold;
+          text-align: left;
+          color: #007bff;
+        }
+
+        h1 {
+          font-size: 26px;
+        }
+
+        .generated-url {
+          padding: 10px;
+        }
+      }
+
+      @media (max-width: 500px) {
+        form {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        input[type="text"] {
+          margin-bottom: 10px;
+          width: 95%;
+        }
+
+        button {
+          width: 100%;
+        }
+
+        table {
+          display: block;
+          overflow-x: auto;
+        }
+
+        table thead {
+          display: none;
+        }
+
+        table tr {
+          display: block;
+          margin-bottom: 15px;
+          border-bottom: 1px solid #ddd;
+        }
+
+        table td {
+          display: block;
+          text-align: left;
+          position: relative;
+          padding-left: 37%;
+        }
+
+        table td::before {
+          content: attr(data-label);
+          position: absolute;
+          left: 0;
+          width: 45%;
+          padding-left: 15px;
+          font-weight: bold;
+          text-align: left;
+          color: #007bff;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+
+        .generated-url {
+          padding: 10px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>URL Shortener</h1>
+
+    <!-- Form Section -->
+    <div>
+      <form id="shorten-form">
+        <label>Enter URL:</label>
+        <input type="text" name="url" placeholder="https://www.example.com" />
+        <button type="submit">Generate</button>
+      </form>
+
+      <!-- Generated URL Section -->
+      <div class="generated-url"></div>
+    </div>
+
+    <!-- URL Table Section -->
+    <table>
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Original URL</th>
+          <th>Short URL</th>
+          <th>Total Clicks</th>
+          <th>Last Visited</th>
+          <th>Visit History</th>
+        </tr>
+      </thead>
+      <tbody id="url-table-body"></tbody>
+    </table>
+
+    <!-- JavaScript -->
+    <script>
+      const urls = <%- JSON.stringify(urls) %>;
+      function convertToIST(milliseconds) {
+        const date = new Date(milliseconds);
+        const options = {
+          timeZone: "Asia/Kolkata",
+          hour12: true,
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        };
+        return new Intl.DateTimeFormat("en-IN", options).format(date);
+      }
+    
+      function renderTable(urls) {
+        const tableBody = document.querySelector("#url-table-body");
+        tableBody.innerHTML = "";
+    
+        urls.forEach((url, index) => {
+          const lastVisited =
+            url.visitedHistory.length > 0
+              ? convertToIST(url.visitedHistory[url.visitedHistory.length - 1].timestamp)
+              : "N/A";
+    
+          const visitHistory =
+            url.visitedHistory.length > 0
+              ? url.visitedHistory
+                  .map((visit) => convertToIST(visit.timestamp))
+                  .join(", ")
+              : "No Visits Yet";
+    
+          const newRow = `
+            <tr>
+              <td data-label="S.No">${index + 1}</td>
+              <td data-label="Original URL"><a href="${url.RedirectURL}" target="_blank">${url.RedirectURL}</a></td>
+              <td data-label="Short URL"><a href="http://localhost:8000/url/${url.shortId}" target="_blank">http://localhost:8000/url/${url.shortId}</a></td>
+              <td data-label="Total Clicks">${url.visitedHistory.length}</td>
+              <td data-label="Last Visited">${lastVisited}</td>
+              <td data-label="Visit History">${visitHistory}</td>
+            </tr>
+          `;
+          tableBody.insertAdjacentHTML("beforeend", newRow);
+        });
+      }
+    
+      renderTable(urls);
+    
+      const form = document.querySelector("#shorten-form");
+      const inputField = document.querySelector('input[name="url"]');
+      const resultDiv = document.querySelector(".generated-url");
+    
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+    
+        const url = inputField.value;
+        if (!url) {
+          alert("Please enter a valid URL");
+          return;
+        }
+    
+        try {
+          const response = await fetch("/url", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ url }),
+          });
+    
+          const data = await response.json();
+    
+          if (data.success) {
+            const shortUrl = `http://localhost:8000/url/${data.data.shortId}`;
+            resultDiv.innerHTML = `<p>URL Generated: <a href="${shortUrl}" target="_blank">${shortUrl}</a></p>`;
+            resultDiv.style.display = "block";
+            const rowCount = document.querySelector("#url-table-body").getElementsByTagName("tr").length;
+            const newRow = `
+              <tr>
+                <td>${rowCount + 1}</td>
+                <td><a href="${data.data.RedirectURL}" target="_blank">${data.data.RedirectURL}</a></td>
+                <td><a href="${shortUrl}" target="_blank">${shortUrl}</a></td>
+                <td>0</td>
+                <td>N/A</td>
+                <td>No Visits Yet</td>
+              </tr>
+            `;
+            document.querySelector("#url-table-body").insertAdjacentHTML("beforeend", newRow);
+    
+            inputField.value = ""; 
+          } else {
+            alert(data.message || "An error occurred");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Failed to shorten URL");
+        }
+      });
+    </script>
+  </body>
+</html>
