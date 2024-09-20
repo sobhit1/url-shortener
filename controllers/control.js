@@ -13,7 +13,7 @@ function sendResponse(statusCode = 200, success, message, data, res) {
 const GenerateNewShortURL = async (req, res) => {
   const { url } = req.body;
   if (!url) {
-    return sendResponse(400, false, "Url is Required", null, res);
+    return sendResponse(400, false, "URL is Required", null, res);
   }
   try {
     const shortId = shortid.generate();
@@ -21,18 +21,14 @@ const GenerateNewShortURL = async (req, res) => {
       shortId,
       RedirectURL: url,
       visitedHistory: [],
+      createdBy: req.user._id,
     });
     await newUrl.save();
-    const responseData = {
-      shortId: newUrl.shortId,
-      RedirectURL: newUrl.RedirectURL,
-    };
-    return sendResponse(200, true, "URL shortened successfully", responseData, res);
+    return res.render("home", { id: newUrl.shortId});
   } catch (error) {
     return sendResponse(500, false, error.message, null, res);
   }
 };
-
 
 const handleRedirect = async (req, res) => {
   const { shortId } = req.params;
@@ -48,12 +44,12 @@ const handleRedirect = async (req, res) => {
       }
     );
     if (!entry) {
-      return res.status(404).send("Not Found");
+      return sendResponse(404, false, "Not Found", null, res);
     }
-    res.redirect(entry.RedirectURL);
+    return res.redirect(entry.RedirectURL);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    sendResponse(500, false, error.message, null, res);
   }
 };
 
@@ -62,7 +58,7 @@ const getAnalysis = async (req, res) => {
   try {
     const entry = await URL.findOne({ shortId });
     if (!entry) {
-      return res.status(404).send("Not Found");
+      return sendResponse(404, false, "Not Found", null, res);
     }
     const totalVisits = entry.visitedHistory.length;
     const lastVisited =  totalVisits > 0 ? entry.visitedHistory[totalVisits - 1].timestamp : "Never visited";

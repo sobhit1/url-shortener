@@ -3,17 +3,19 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon index.js"
   },
   "author": "Sobhit Raghav",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.21.0",
     "mongoose": "^8.6.3",
-    "nodemon": "^3.1.5",
-    "shortid": "^2.2.16"
+    "nodemon": "^3.1.6",
+    "shortid": "^2.2.16",
+    "uuid": "^10.0.0"
   }
 }
