@@ -115,6 +115,9 @@
             <th>Shortened URL</th>
             <th>Redirect URL</th>
             <th>Clicks</th>
+            <% if (locals.users) { %>
+             <th>Created By</th>
+            <% } %>
           </tr>
         </thead>
         <tbody>
@@ -124,6 +127,14 @@
             <td><a href="http://localhost:8000/url/<%= url.shortId %>">http://localhost:8000/url/<%= url.shortId %></a></td>
             <td><a href="<%= url.RedirectURL %>"><%= url.RedirectURL %></a></td>
             <td><%= url.visitedHistory.length %></td>
+            <% if (locals.users) { 
+                const user = users.find((user) => user._id.toString() === url.createdBy.toString());
+                if (user) { %>
+                  <td><%= user.name %></td>
+                <% } else { %>
+                  <td>No user found</td>
+                <% }
+            } %>
           </tr>
           <% }) %>
         </tbody>
@@ -131,9 +142,4 @@
       <% } %>
     </div>
   </body>
-  <script>
-    if (performance.navigation.type === 1) {
-      window.location.href = "/";
-    }
-  </script>
 </html>

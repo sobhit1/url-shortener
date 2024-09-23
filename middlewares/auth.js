@@ -1,35 +1,30 @@
 const { getUser } = require("../service/auth");
 
-async function restrictToLoggedInUserOnly(req, res, next) {
+function checkForAuthentication(req, res, next) {
   try {
-    const userId = req.cookies?.uid;
-    if (!userId) {
-      return res.redirect("/login");
-    }
-    const user = await getUser(userId);
-    if (!user) {
-      return res.redirect("/login");
-    }
+    const tokenCookie = req.cookies?.uid;
+    req.user=null;
+    if(!tokenCookie) return next();
+    const user = getUser(tokenCookie);
     req.user = user;
-    next();
+    return next();
   } catch (error) {
     console.error("Middleware Error:", error);
     return res.status(500).send("Server error");
   }
 }
 
-async function checkAuth(req, res, next) {
-  try {
-    const userId = req.cookies?.uid;
-
-    const user = await getUser(userId);
-
-    req.user = user;
-    next();
-  } catch (error) {
-    console.error("Middleware Error:", error);
-    return res.status(500).send("Server error");
+function restrictTo(roles=[]){
+  return (req, res, next) => {
+    try {
+      if(!req.user) return res.redirect("/login");
+      if(!roles.includes(req.user.role)) return res.end("UnAuthorized");
+      return next();
+    } catch (error) {
+      console.error("Middleware Error:", error);
+      return res.status(500).send("Server error");
+    }
   }
 }
 
-module.exports = { restrictToLoggedInUserOnly, checkAuth };
+module.exports = { checkForAuthentication, restrictTo };

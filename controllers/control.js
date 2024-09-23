@@ -2,12 +2,11 @@ const URL = require("../models/url_schema");
 const shortid = require("shortid");
 
 function sendResponse(statusCode = 200, success, message, data, res) {
-  res.status(statusCode).send({
+  return res.status(statusCode).send({
     success: success,
     message: message,
     data: data,
   });
-  return;
 }
 
 const GenerateNewShortURL = async (req, res) => {

@@ -2,12 +2,11 @@ const User = require("../models/user_schema");
 // const {v4: uuidv4} = require('uuid');
 const {setUser} = require('../service/auth');
 function sendResponse(statusCode = 200, success, message, data, res) {
-  res.status(statusCode).send({
+  return res.status(statusCode).send({
     success: success,
     message: message,
     data: data,
   });
-  return;
 }
 
 const createUser = async (req, res) => {
@@ -19,12 +18,6 @@ const createUser = async (req, res) => {
     const user = await User.findOne({ email });
     if (user) {
       return sendResponse(400, false, "User already exists", null, res);
-    }
-    if(password.length < 8){
-      return sendResponse(400, false, "Password must be at least 8 characters", null, res);
-    }
-    if(!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)){
-      return sendResponse(400, false, "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character", null, res);
     }
     if(password.length < 8){
       return sendResponse(400, false, "Password must be at least 8 characters", null, res);
