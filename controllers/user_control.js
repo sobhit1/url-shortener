@@ -1,5 +1,5 @@
 const User = require("../models/user_schema");
-const {v4: uuidv4} = require('uuid');
+// const {v4: uuidv4} = require('uuid');
 const {setUser} = require('../service/auth');
 function sendResponse(statusCode = 200, success, message, data, res) {
   res.status(statusCode).send({
@@ -32,6 +32,8 @@ const createUser = async (req, res) => {
       password,
     });
     await newUser.save();
+    const token = setUser(newUser);
+    res.cookie("uid", token);
     return res.redirect("/");
   } catch (error) {
     return sendResponse(500, false, error.message, null, res);
@@ -51,9 +53,8 @@ const loginUser = async (req, res) => {
     if (user.password !== password) {
       return sendResponse(400, false, "Incorrect password", null, res);
     }
-    const sessionId = uuidv4();
-    setUser(sessionId, user);
-    res.cookie("uid", sessionId);
+    const token = setUser(user);
+    res.cookie("uid", token);
     return res.redirect("/");
   } catch (error) {
     return sendResponse(500, false, error.message, null, res);
