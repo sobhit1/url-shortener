@@ -26,6 +26,12 @@ const createUser = async (req, res) => {
     if(!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)){
       return sendResponse(400, false, "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character", null, res);
     }
+    if(password.length < 8){
+      return sendResponse(400, false, "Password must be at least 8 characters", null, res);
+    }
+    if(!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)){
+      return sendResponse(400, false, "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character", null, res);
+    }
     const newUser = new User({
       name,
       email,
